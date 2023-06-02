@@ -1,0 +1,44 @@
+@echo off
+rem Проверка параметров
+if "%~1" == "" goto er1
+if "%~2" == "" goto er1
+if "%~3" == "" goto er1
+if not exist %1 goto er2
+rem Устанавливаем переменные
+set PATH=%1
+set NAME=%2
+set /a CNT=0
+rem Сдвигаем параметры, чтобы первым было первое расширение
+shift
+shift
+rem Ввод файла протокола
+echo Enter file protocol name:
+set /p "PROT="
+rem открываем путь указанные в параметрах запуска
+cd %PATH%
+rem рекурсивный поиск в указанном каталоге файлов с указанным именем и раширением
+:SH
+echo Deleting %1 files
+for /r %%f in (%NAME%.%1) do (
+rem удаление файла с подтверждением
+if exist %%f (del /p "%%f") & if not exist %%f (set /a CNT+=1) & echo %%f >> %PROT%
+rem если файл удален, увеличиваем счетчик и дописываем имя файла в протокол
+)
+rem сдвигаемся к следующему расширению
+shift
+rem если еще одно расширение есть, снова ищем и удаляем файлы
+if not "%~1" == "" goto SH
+echo %CNT% files has been deleted
+rem проверяем код ошибки
+if %Errorlevel%==0 (echo "Success") else (echo "Fail: %Errorlevel%")
+rem к концу бат файла
+goto:EOF
+
+rem если не введен один из параметров
+:er1
+echo No parameters ! must be at least 3
+goto:EOF
+rem если пути к каталогу не существует
+:er2
+echo Path not found
+goto:EOF
