@@ -1,2 +1,2 @@
 # windowsnt-scripts
-Сценарии и утилиты для Windows NT
+Сценарии и утилиты для Windows
